@@ -6,7 +6,16 @@
 
 # You should only use these commands: jq, awk, sed
 
+JSON_INPUT=data.json
 
-# lets do some string interpolation using jq
+name=$(jq -r '(.name | (.[0:1] | ascii_upcase) + .[1:])' "$JSON_INPUT");
+type=$(jq -r '(.types[0].type.name)' "$JSON_INPUT");
+formatted_weight=$(jq -r '(.weight/10)' "$JSON_INPUT");
+formatted_height=$(jq -r '(.height/10)' "$JSON_INPUT");
 
-jq -r '. | "\(.name | (.[0:1] | ascii_upcase) + .[1:]) is of type \(.types[0].type.name), weighs \(.weight/10)kg, and is \(.height/10)m tall."' data.json
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
+
+
+# string interpolation using jq can acheive same result as shown below
+
+# jq -r '. | "\(.name | (.[0:1] | ascii_upcase) + .[1:]) is of type \(.types[0].type.name), weighs \(.weight/10)kg, and is \(.height/10)m tall."' data.json
