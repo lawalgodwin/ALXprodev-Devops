@@ -43,17 +43,28 @@ fetch_pokemon_data() {
 }
 
 # Main script to iterate over the list of Pokémon
+# Loop over the list of Pokémon names and fetch data in parallel
+
+# Keep track of all process IDs
+job_pids=()
 
 for pokemon in "${pokemons[@]}";
 do
     fetch_pokemon_data "$pokemon" &
-    if [[ $? -eq 1 ]]; then
-        # if fetch failed, monve to the next pokemon to be fetched
-        continue
-    fi
+    # store the background job ID
+    job_pids+=($!)
 done
 
-# wait for all background processes to complete
-wait
+# manaage the background jobs
+for pid in "${job_pids[@]}";
+do
+    if wait "$pid" 2>/dev/null; then # Wait for each background job to finish
+        echo "Process $pid completed successfully"
+    else
+        echo "process $pid failed or was terminated"
+    fi
+    # Always send SIGTERM to terminate the process, regardless of its current state
+    kill -s SIGTERM "$pid" 2>/dev/null && echo "Sent SIGTERM to $pid"
+done
 
 echo "All Pokémon data fetched successfully."
