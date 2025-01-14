@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# A script that extracts the Pokémon’s name, height, weight, and type from the JSON file created in Task 0.
+
+# Format the output in a human-readable way,“Pikachu is of type Electric, weighs 6kg, and is 0.4m tall.”
+
+# You should only use these commands: jq, awk, sed
+
+
+# lets do some string interpolation using jq
+
+jq -r '. | "\(.name | (.[0:1] | ascii_upcase) + .[1:]) is of type \(.types[0].type.name), weighs \(.weight/10)kg, and is \(.height/10)m tall."' data.json
